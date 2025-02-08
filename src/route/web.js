@@ -7,7 +7,7 @@ let initWebRoutes = (app) => {
     // router.get('/', (req, res) => {
     //     return res.send('hello nhu nhu')
     // });
-    router.get('/test',getHomepage);
+    router.get('/',getHomepage);
     // router.get('/', (req, res) => {
     //     res.render("homepage");
     // });

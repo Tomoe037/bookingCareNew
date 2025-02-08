@@ -5,6 +5,7 @@ import configViewEngine from './config/viewEngine.js';
 import initWebRoutes from './route/web.js';
 import dotenv from 'dotenv';
 import path from 'path';
+import connectDB from './config/connectDB.js';
 
 dotenv.config({ path: path.resolve('../.env')  });
 
@@ -15,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 initWebRoutes(app);
-
+connectDB();
 const port = process.env.PORT ;
 app.listen(port, () => {
   console.log(`backend is running on port ${port}`);
