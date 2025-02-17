@@ -40,4 +40,16 @@ const hashUserPassword = (password) => {
 
     })
 }
-export { createdNewUser, hashUserPassword };
+const getAllUser = () => {
+    return new Promise(async (resolve, reject) =>{
+try {
+    const users = db.User.findAll({raw: true});
+    resolve(users);
+} catch (e) {
+    reject(e)
+    
+}
+    })
+
+}
+export { createdNewUser, hashUserPassword,getAllUser };

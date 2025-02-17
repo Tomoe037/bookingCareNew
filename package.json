@@ -2,9 +2,9 @@
   "name": "bookingcare",
   "version": "1.0.0",
   "description": "A Node.js project for managing booking care.",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Your Name",

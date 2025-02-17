@@ -1,9 +1,9 @@
 import db from "../models/index.js";
-import { createdNewUser } from "../services/CRUDService.js"
+import { createdNewUser, getAllUser } from "../services/CRUDService.js"
 const getHomepage = async (req, res) => {
     try {
         let data = await db.User.findAll();
-        console.log(data);
+        // console.log(data);
         return res.render("homepage", { data: JSON.stringify(data) });
 
     } catch (e) {
@@ -19,7 +19,16 @@ const postCRUD = async (req, res) => {
     console.log(message);
     return res.send("post-crud");
 };
+const displayGetCRUD = async (req, res) => {
+    let data = await getAllUser();
+    console.log("--------------");
+    console.log(data);
+    console.log("--------------");
+    return res.render("displayCRUD.ejs",{
+        dataTable : data
+    });
+}
 
 
 
-export { getHomepage, getCRUD, postCRUD };
+export { getHomepage, getCRUD, postCRUD, displayGetCRUD };
