@@ -1,31 +1,48 @@
 import db from "../models/index.js";
-import pkg from "sequelize";
 import bcrypt from "bcryptjs";
-const { where } = pkg;
+import sequelizePkg from "sequelize";
+import bodyParserPkg from "body-parser";
+const { raw } = bodyParserPkg;
+const { where } = sequelizePkg;
+
 const handleUserLogin = async (email, password) => {
-  try {
-    let userData = {};
+  return new Promise(async (resolve, reject) => {
+    try {
+      let userData = {};
 
-    // Truy vấn database một lần để lấy user
-    const user = await db.User.findOne({ where: { email } });
+      // Tìm user trực tiếp mà không cần checkUserEmail
+      const user = await db.User.findOne({
+        where: { email: email },
+        attributes: ["email", "roleId", "password"],
+        raw: true,
+      });
 
-    if (!user) {
-      return {
-        errCode: 1,
-        errMessage: "Your email does not exist in the system",
-      };
+      if (!user) {
+        userData.errCode = 1;
+        userData.errMessage = "Your email does not exist in the system";
+        return resolve(userData);
+      }
+
+      // So sánh mật khẩu (dùng bcrypt.compare thay vì compareSync để tránh chặn event loop)
+      let check = await bcrypt.compare(password, user.password);
+
+      if (check) {
+        userData.errCode = 0;
+        userData.errMessage = "ok";
+        // console.log("user data", userData);
+        // console.log("user ", userData.user);
+        userData.user = user;
+        delete user.password;
+      } else {
+        userData.errCode = 3;
+        userData.errMessage = "Wrong password";
+      }
+
+      resolve(userData);
+    } catch (e) {
+      reject(e);
     }
-
-    // So sánh mật khẩu bất đồng bộ
-    let check = await bcrypt.compare(password, user.password);
-    if (check) {
-      return { errCode: 0, errMessage: "ok", user };
-    } else {
-      return { errCode: 3, errMessage: "Wrong password" };
-    }
-  } catch (error) {
-    return { errCode: -1, errMessage: "Internal server error" };
-  }
+  });
 };
 
 const checkUserEmail = (userEmail) => {
