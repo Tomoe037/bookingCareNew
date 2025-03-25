@@ -4,6 +4,7 @@ import {
   getAllUser,
   getUserInfoById,
   updateUserData,
+  deleteUserById,
 } from "../services/CRUDService.js";
 const getHomepage = async (req, res) => {
   try {
@@ -54,5 +55,22 @@ const putCRUD = async (req, res) => {
     dataTable: allUsers,
   });
 };
+const deleteCRUD = async (req, res) => {
+  const userId = req.query.id;
+  if (userId) {
+    await deleteUserById(userId);
+    return res.send("delete the user succes");
+  } else {
+    return res.send("user not found");
+  }
+};
 
-export { getHomepage, getCRUD, postCRUD, displayGetCRUD, getEditCRUD, putCRUD };
+export {
+  getHomepage,
+  getCRUD,
+  postCRUD,
+  displayGetCRUD,
+  getEditCRUD,
+  putCRUD,
+  deleteCRUD,
+};

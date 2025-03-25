@@ -6,7 +6,9 @@ import {
   displayGetCRUD,
   getEditCRUD,
   putCRUD,
+  deleteCRUD,
 } from "../controllers/homeController.js";
+import { handleLogin } from "../controllers/userController.js";
 
 let router = express.Router();
 
@@ -23,7 +25,8 @@ let initWebRoutes = (app) => {
   router.get("/get-crud", displayGetCRUD);
   router.get("/edit-crud", getEditCRUD);
   router.post("/put-crud", putCRUD);
-
+  router.get("/delete-crud", deleteCRUD);
+  router.post("/api/login", handleLogin);
   return app.use("/", router);
 };
 
