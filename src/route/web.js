@@ -8,7 +8,10 @@ import {
   putCRUD,
   deleteCRUD,
 } from "../controllers/homeController.js";
-import { handleLogin } from "../controllers/userController.js";
+import {
+  handleLogin,
+  handleGetAllUser,
+} from "../controllers/userController.js";
 
 let router = express.Router();
 
@@ -27,6 +30,7 @@ let initWebRoutes = (app) => {
   router.post("/put-crud", putCRUD);
   router.get("/delete-crud", deleteCRUD);
   router.post("/api/login", handleLogin);
+  router.get("/api/get-all-users", handleGetAllUser);
   return app.use("/", router);
 };
 

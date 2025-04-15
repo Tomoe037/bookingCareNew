@@ -2,9 +2,8 @@ import db from "../models/index.js";
 import bcrypt from "bcryptjs";
 import sequelizePkg from "sequelize";
 import bodyParserPkg from "body-parser";
+const { Op, where } = sequelizePkg;
 const { raw } = bodyParserPkg;
-const { where } = sequelizePkg;
-
 const handleUserLogin = async (email, password) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -62,4 +61,31 @@ const checkUserEmail = (userEmail) => {
   });
 };
 
-export { handleUserLogin, checkUserEmail };
+let getAllUsers = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let users = "";
+      if (userId === "ALL") {
+        users = await db.User.findAll({
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      }
+      if (userId && userId !== "ALL") {
+        users = await db.User.findOne({
+          where: { id: userId },
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      }
+      resolve(users);
+    } catch (e) {
+      console.error("❌ Lỗi trong getAllUsers:", e);
+      reject(e);
+    }
+  });
+};
+
+export { handleUserLogin, checkUserEmail, getAllUsers };
