@@ -1,5 +1,11 @@
 import { getAllUser } from "../services/CRUDService.js";
-import { handleUserLogin, getAllUsers } from "../services/userService.js";
+import {
+  handleUserLogin,
+  getAllUsers,
+  createNewUser,
+  deleteUser,
+  updateUserData,
+} from "../services/userService.js";
 
 const handleLogin = async (req, res) => {
   const email = req.body.email;
@@ -19,7 +25,7 @@ const handleLogin = async (req, res) => {
   });
 };
 const handleGetAllUser = async (req, res) => {
-  const id = req.body.id; // all, id
+  const id = req.query.id; // all, id
   if (!id) {
     return res.status(200).json({
       errCode: 1,
@@ -35,4 +41,31 @@ const handleGetAllUser = async (req, res) => {
     users,
   });
 };
-export { handleLogin, handleGetAllUser };
+const handleCreateNewUser = async (req, res) => {
+  const message = await createNewUser(req.body);
+  console.log(message);
+  return res.status(200).json(message);
+};
+const handleDeleteUser = async (req, res) => {
+  if (!req.body.id) {
+    return res.status(200).json({
+      errCode: 1,
+      errMessage: "thieu id",
+    });
+  }
+  const message = await deleteUser(req.body.id);
+  console.log(message);
+  return res.status(200).json(message);
+};
+const handleEditUser = async (req, res) => {
+  const data = req.body;
+  const message = await updateUserData(data);
+  return res.status(200).json(message);
+};
+export {
+  handleLogin,
+  handleGetAllUser,
+  handleCreateNewUser,
+  handleEditUser,
+  handleDeleteUser,
+};

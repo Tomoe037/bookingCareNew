@@ -4,6 +4,18 @@ import sequelizePkg from "sequelize";
 import bodyParserPkg from "body-parser";
 const { Op, where } = sequelizePkg;
 const { raw } = bodyParserPkg;
+const salt = bcrypt.genSaltSync(10);
+
+const hashUserPassword = (password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let hashPassword = await bcrypt.hashSync(password, salt);
+      resolve(hashPassword);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 const handleUserLogin = async (email, password) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -88,4 +100,120 @@ let getAllUsers = (userId) => {
   });
 };
 
-export { handleUserLogin, checkUserEmail, getAllUsers };
+const createNewUser = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //check email is exist
+      let check = await checkUserEmail(data.email);
+      if (check === true) {
+        resolve({
+          errCode: 1,
+          message: "your email is already in use, plz try another email",
+        });
+      }
+      let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+      console.log("from service");
+      console.log(data);
+      console.log("password: ", data.password);
+      console.log("hashPasswordFromBcrypt : ", hashPasswordFromBcrypt);
+      await db.User.create({
+        email: data.email,
+        password: hashPasswordFromBcrypt,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        address: data.address,
+        phoneNumber: data.phoneNumber,
+        gender: data.gender === "1" ? true : false,
+        roleId: data.roleId,
+      });
+      resolve({
+        errCode: 0,
+        message: "ok",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const deleteUser = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const id = parseInt(userId, 10);
+      if (isNaN(id)) {
+        return resolve({
+          errCode: 1,
+          errMessage: "ID không hợp lệ",
+        });
+      }
+
+      let user = await db.User.findOne({
+        where: { id },
+      });
+
+      console.log("Found user: ", user);
+
+      if (!user) {
+        return resolve({
+          errCode: 2,
+          errMessage: `Người dùng không tồn tại`,
+        });
+      }
+
+      await db.User.destroy({ where: { id } });
+
+      return resolve({
+        errCode: 0,
+        errMessage: `Người dùng đã bị xóa`,
+      });
+    } catch (error) {
+      console.error("Lỗi trong deleteUser:", error);
+      return reject(error);
+    }
+  });
+};
+const updateUserData = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id) {
+        resolve({
+          errCode: 2,
+          errMessage: "chua co id de sua",
+        });
+      }
+      const user = await db.User.findOne({
+        where: { id: data.id },
+        raw: false,
+      });
+      if (user) {
+        user.firstName = data.firstName;
+        user.lastName = data.lastName;
+        user.phoneNumber = data.phoneNumber;
+        user.address = data.address;
+        user.gender = data.gender;
+        await user.save();
+
+        resolve({
+          errCode: 0,
+          errMessage: "sua nguoi dung thanh cong",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "nguoi dung khong ton tai",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+export {
+  handleUserLogin,
+  checkUserEmail,
+  getAllUsers,
+  createNewUser,
+  deleteUser,
+  updateUserData,
+};

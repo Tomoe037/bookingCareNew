@@ -7,10 +7,14 @@ import {
   getEditCRUD,
   putCRUD,
   deleteCRUD,
+  
 } from "../controllers/homeController.js";
 import {
   handleLogin,
   handleGetAllUser,
+  handleCreateNewUser,
+  handleDeleteUser,
+  handleEditUser
 } from "../controllers/userController.js";
 
 let router = express.Router();
@@ -31,6 +35,9 @@ let initWebRoutes = (app) => {
   router.get("/delete-crud", deleteCRUD);
   router.post("/api/login", handleLogin);
   router.get("/api/get-all-users", handleGetAllUser);
+  router.post("/api/create-new-user", handleCreateNewUser);
+  router.put("/api/edit-user", handleEditUser);
+  router.delete("/api/delete-user", handleDeleteUser);
   return app.use("/", router);
 };
 
